@@ -497,8 +497,7 @@
       const CLOUD_NAME = "wb8bbwnq";
       const UPLOAD_PRESET = "Lucinam";
       const MEMORY_TAG = "lucinam";
-      const CLOUDINARY_API_KEY = "";
-      const CLOUDINARY_API_SECRET = "";
+      const HIDDEN_MEMORIES_STORAGE_KEY = "lucinam-hidden-memories";
       const ADMIN_USERNAME = "Lucinam";
       const ADMIN_PASSWORD = "Burak";
 
@@ -561,6 +560,27 @@
         };
       }
 
+      function readHiddenMemoryIds() {
+        try {
+          const raw = localStorage.getItem(HIDDEN_MEMORIES_STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? new Set(parsed.map(String)) : new Set();
+        } catch {
+          return new Set();
+        }
+      }
+
+      function hideMemoryId(id) {
+        const hidden = readHiddenMemoryIds();
+        hidden.add(String(id));
+        localStorage.setItem(HIDDEN_MEMORIES_STORAGE_KEY, JSON.stringify([...hidden]));
+      }
+
+      function applyGalleryFilter(memories) {
+        const hidden = readHiddenMemoryIds();
+        return memories.filter((item) => !hidden.has(String(item.id)));
+      }
+
       async function fetchCloudinaryMemories() {
         const response = await fetch(
           `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${MEMORY_TAG}.json?_=${Date.now()}`
@@ -569,10 +589,12 @@
           throw new Error("list-unavailable");
         }
         const data = await response.json();
-        return (data.resources || [])
-          .slice()
-          .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-          .map(resourceToPhoto);
+        return applyGalleryFilter(
+          (data.resources || [])
+            .slice()
+            .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+            .map(resourceToPhoto)
+        );
       }
 
       function formatDateLabel(iso) {
@@ -781,57 +803,19 @@
         resolve(accepted);
       }
 
-      async function sha1Hex(message) {
-        const data = new TextEncoder().encode(message);
-        const hash = await crypto.subtle.digest("SHA-1", data);
-        return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-      }
-
-      async function destroyCloudinaryAsset(publicId) {
-        if (!publicId || String(publicId).startsWith("http")) {
-          throw new Error("Bu fotoğraf ortak listede bir Cloudinary kaydı değil.");
-        }
-        if (!CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-          throw new Error("Ortak listeden silmek için Cloudinary API anahtarı ve API secret gerekli.");
-        }
-        const timestamp = Math.round(Date.now() / 1000);
-        const signature = await sha1Hex(
-          `invalidate=true&public_id=${publicId}&timestamp=${timestamp}${CLOUDINARY_API_SECRET}`
-        );
-        const body = new FormData();
-        body.append("public_id", publicId);
-        body.append("timestamp", String(timestamp));
-        body.append("invalidate", "true");
-        body.append("api_key", CLOUDINARY_API_KEY);
-        body.append("signature", signature);
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/destroy`, {
-          method: "POST",
-          body,
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || data.result !== "ok") {
-          throw new Error(data.error?.message || "Fotoğraf ortak listeden silinemedi.");
-        }
-      }
-
       async function deletePhoto(index) {
         if (!isAdmin) return;
         const photo = galleryPhotos[index];
         if (!photo) return;
-        const accepted = await askConfirm(`“${photo.title}” ortak galeriden silinsin mi?`);
+        const accepted = await askConfirm(`“${photo.title}” galeriden kaldırılsın mı?`);
         if (!accepted) return;
-        try {
-          await destroyCloudinaryAsset(photo.id);
-          cloudMemories = cloudMemories.filter((item) => item.id !== photo.id);
-          if (uploadedMemory && uploadedMemory.id === photo.id) uploadedMemory = null;
-          if (!lightbox.classList.contains("hidden")) closeLightbox();
-          renderGallery();
-          observeReveals();
-          await refreshSharedGallery();
-          showNotice("Fotoğraf ortak galeriden silindi.");
-        } catch (error) {
-          showNotice(error.message || "Fotoğraf silinemedi.");
-        }
+        hideMemoryId(photo.id);
+        cloudMemories = cloudMemories.filter((item) => item.id !== photo.id);
+        if (uploadedMemory && uploadedMemory.id === photo.id) uploadedMemory = null;
+        if (!lightbox.classList.contains("hidden")) closeLightbox();
+        renderGallery();
+        observeReveals();
+        showNotice("Fotoğraf galeriden kaldırıldı.");
       }
 
       const cloudinaryWidget = window.cloudinary
@@ -936,7 +920,7 @@
         try {
           cloudMemories = await fetchCloudinaryMemories();
         } catch {
-          cloudMemories = uploadedMemory ? [uploadedMemory] : cloudMemories;
+          cloudMemories = applyGalleryFilter(uploadedMemory ? [uploadedMemory] : cloudMemories);
         }
         renderGallery();
         observeReveals();
