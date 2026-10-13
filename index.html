@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lucinam</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A4%8D%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Outfit:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              cream: "#FBF6EE",
+              blush: "#F4D5DC",
+              rose: "#C27B86",
+              dusty: "#A45C68",
+              champagne: "#E8D5A3",
+              ink: "#3D3836",
+            },
+            fontFamily: {
+              serif: ['"Cormorant Garamond"', "Georgia", "serif"],
+              sans: ['"Outfit"', "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background:
+          radial-gradient(1200px 600px at 12% -10%, rgba(244, 213, 220, 0.7), transparent 55%),
+          radial-gradient(900px 500px at 100% 8%, rgba(232, 213, 163, 0.45), transparent 50%),
+          #fbf6ee;
+      }
+
+      .grain::before {
+        content: "";
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        opacity: 0.07;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      }
+
+      .hero-veil {
+        background:
+          linear-gradient(180deg, rgba(61, 56, 54, 0.18) 0%, rgba(61, 56, 54, 0.38) 45%, rgba(61, 56, 54, 0.55) 100%),
+          url("https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1920&q=80")
+            center/cover no-repeat;
+      }
+
+      .photo-card img {
+        transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .photo-card:hover img {
+        transform: scale(1.08);
+      }
+
+      .photo-card .overlay {
+        background: linear-gradient(180deg, transparent 35%, rgba(61, 56, 54, 0.72) 100%);
+      }
+
+      .lightbox-enter {
+        animation: lightboxIn 0.28s ease-out;
+      }
+
+      @keyframes lightboxIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .atmosphere {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        overflow: hidden;
+      }
+
+      .float-bit {
+        position: absolute;
+        bottom: -8vh;
+        color: #c27b86;
+        opacity: 0;
+        animation: floatUp linear infinite;
+        filter: drop-shadow(0 0 8px rgba(232, 213, 163, 0.45));
+      }
+
+      .float-bit.sparkle {
+        color: #e8d5a3;
+      }
+
+      @keyframes floatUp {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) scale(0.7) rotate(0deg);
+        }
+        12% {
+          opacity: 0.28;
+        }
+        70% {
+          opacity: 0.18;
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(var(--drift), -112vh, 0) scale(1) rotate(18deg);
+        }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+      }
+
+      .music-btn[aria-pressed="true"] {
+        box-shadow: 0 0 0 6px rgba(194, 123, 134, 0.18), 0 12px 28px rgba(164, 92, 104, 0.22);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .float-bit {
+          animation: none;
+          display: none;
+        }
+
+        .reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="grain font-sans text-ink antialiased">
+    <div class="atmosphere" aria-hidden="true">
+      <span class="float-bit text-lg" style="left: 6%; --drift: 18px; animation-duration: 22s; animation-delay: 0s">♥</span>
+      <span class="float-bit sparkle text-xs" style="left: 14%; --drift: -22px; animation-duration: 16s; animation-delay: 2s">✦</span>
+      <span class="float-bit text-sm" style="left: 23%; --drift: 28px; animation-duration: 26s; animation-delay: 6s">♥</span>
+      <span class="float-bit sparkle text-[10px]" style="left: 31%; --drift: -12px; animation-duration: 14s; animation-delay: 1s">✧</span>
+      <span class="float-bit text-base" style="left: 42%; --drift: 10px; animation-duration: 20s; animation-delay: 8s">♥</span>
+      <span class="float-bit sparkle text-xs" style="left: 51%; --drift: -30px; animation-duration: 18s; animation-delay: 4s">✦</span>
+      <span class="float-bit text-xl" style="left: 63%; --drift: 16px; animation-duration: 24s; animation-delay: 3s">♥</span>
+      <span class="float-bit sparkle text-[11px]" style="left: 72%; --drift: -18px; animation-duration: 15s; animation-delay: 9s">✧</span>
+      <span class="float-bit text-sm" style="left: 81%; --drift: 24px; animation-duration: 21s; animation-delay: 5s">♥</span>
+      <span class="float-bit sparkle text-xs" style="left: 90%; --drift: -8px; animation-duration: 17s; animation-delay: 7s">✦</span>
+      <span class="float-bit text-xs" style="left: 37%; --drift: -26px; animation-duration: 19s; animation-delay: 11s">♥</span>
+      <span class="float-bit sparkle text-[10px]" style="left: 58%; --drift: 14px; animation-duration: 13s; animation-delay: 10s">✧</span>
+    </div>
+
+    <header id="hero" class="relative isolate min-h-screen overflow-hidden">
+      <div class="hero-veil absolute inset-0"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-blush/20 via-transparent to-cream"></div>
+      <div class="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 text-center text-cream">
+        <p class="mb-4 text-xs uppercase tracking-[0.42em] text-champagne">A private gallery</p>
+        <h1 class="font-serif text-6xl font-semibold leading-tight drop-shadow-sm sm:text-8xl">
+          Lucinam
+        </h1>
+        <p class="mt-6 max-w-xl text-lg font-light leading-relaxed text-cream/90 sm:text-xl">
+          Add your own photos and captions. This page is a template you can fill however you like.
+        </p>
+        <a
+          href="#gallery"
+          class="mt-10 inline-flex items-center gap-3 rounded-full border border-cream/40 bg-cream/15 px-7 py-3 text-sm tracking-wide backdrop-blur-md transition hover:bg-cream/25"
+        >
+          View gallery
+          <span aria-hidden="true" class="text-lg">↓</span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section id="gallery" class="mx-auto max-w-6xl px-6 py-24">
+        <div class="reveal mb-12 text-center">
+          <p class="text-xs uppercase tracking-[0.35em] text-rose">Gallery</p>
+          <h2 class="mt-3 font-serif text-4xl sm:text-5xl">Your photos</h2>
+          <p class="mx-auto mt-4 max-w-lg text-sm font-light text-ink/70">
+            Click a card to open it. Replace the sample images in the photos list with your own.
+          </p>
+          <button
+            id="open-memory-modal"
+            type="button"
+            class="mt-8 inline-flex items-center gap-2 rounded-full border border-rose/30 bg-blush/70 px-6 py-3 text-sm tracking-wide text-dusty shadow-[0_10px_24px_rgba(164,92,104,0.14)] backdrop-blur transition hover:bg-blush hover:shadow-[0_12px_28px_rgba(164,92,104,0.2)]"
+          >
+            Yeni Anı Ekle 📸
+          </button>
+        </div>
+        <div id="gallery-grid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+      </section>
+    </main>
+
+    <footer class="reveal border-t border-blush/50 px-6 py-10 text-center">
+      <p class="font-serif text-lg text-dusty">Made with care ❤️</p>
+    </footer>
+
+    <audio
+      id="bg-music"
+      loop
+      preload="none"
+      src="https://upload.wikimedia.org/wikipedia/commons/transcoded/6/6e/Pachelbel%27s_Canon.ogg/Pachelbel%27s_Canon.ogg.mp3"
+    ></audio>
+    <!-- Replace src with your own file, for example music.mp3 -->
+
+    <button
+      id="music-toggle"
+      type="button"
+      class="music-btn fixed bottom-6 right-6 z-[45] flex h-14 w-14 items-center justify-center rounded-full border border-blush/70 bg-cream/90 text-dusty shadow-[0_12px_28px_rgba(164,92,104,0.18)] backdrop-blur transition hover:scale-105 hover:bg-cream"
+      aria-pressed="false"
+      aria-label="Play music"
+      title="Play / pause music"
+    >
+      <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-6 w-6 fill-current" aria-hidden="true">
+        <path d="M9 17.5V6.5a1 1 0 0 1 1.53-.85l8.2 5.5a1 1 0 0 1 0 1.7l-8.2 5.5A1 1 0 0 1 9 17.5Z" />
+      </svg>
+      <svg id="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="hidden h-6 w-6 fill-current" aria-hidden="true">
+        <path d="M8 6h2.5v12H8zM13.5 6H16v12h-2.5z" />
+      </svg>
+    </button>
+
+    <div
+      id="lightbox"
+      class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lightbox-title"
+      aria-hidden="true"
+    >
+      <div id="lightbox-backdrop" class="absolute inset-0 bg-ink/55 backdrop-blur-md"></div>
+
+      <button
+        id="lightbox-close"
+        type="button"
+        class="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-cream/90 text-xl text-ink shadow-lg transition hover:bg-cream"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+      <button
+        id="lightbox-prev"
+        type="button"
+        class="absolute left-3 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-cream/85 text-2xl text-ink shadow-lg transition hover:bg-cream sm:left-6"
+        aria-label="Previous photo"
+      >
+        ‹
+      </button>
+
+      <button
+        id="lightbox-next"
+        type="button"
+        class="absolute right-3 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-cream/85 text-2xl text-ink shadow-lg transition hover:bg-cream sm:right-6"
+        aria-label="Next photo"
+      >
+        ›
+      </button>
+
+      <figure id="lightbox-figure" class="lightbox-enter relative z-10 mx-auto w-full max-w-4xl">
+        <img
+          id="lightbox-image"
+          alt=""
+          class="mx-auto max-h-[72vh] w-full rounded-2xl object-contain shadow-2xl"
+        />
+        <figcaption class="mt-5 rounded-2xl bg-cream/90 px-6 py-5 text-center shadow-lg backdrop-blur">
+          <h3 id="lightbox-title" class="font-serif text-2xl"></h3>
+          <time id="lightbox-date" class="mt-1 block text-xs uppercase tracking-[0.22em] text-rose"></time>
+          <p id="lightbox-description" class="mx-auto mt-3 max-w-2xl text-sm font-light leading-relaxed text-ink/75"></p>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div
+      id="memory-modal"
+      class="fixed inset-0 z-[52] hidden items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="memory-modal-title"
+      aria-hidden="true"
+    >
+      <div id="memory-modal-backdrop" class="absolute inset-0 bg-ink/50 backdrop-blur-md"></div>
+      <div class="relative z-10 w-full max-w-lg rounded-[1.75rem] border border-blush/70 bg-cream px-6 py-8 shadow-[0_24px_60px_rgba(61,56,54,0.22)] sm:px-8">
+        <button
+          id="memory-modal-close"
+          type="button"
+          class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-blush/70 text-xl text-ink transition hover:bg-blush"
+          aria-label="Kapat"
+        >
+          ×
+        </button>
+        <p class="text-xs uppercase tracking-[0.32em] text-rose">Lucinam</p>
+        <h2 id="memory-modal-title" class="mt-2 font-serif text-3xl">Yeni anı</h2>
+        <p class="mt-2 text-sm font-light text-ink/65">Önce başlık ve tarihi yaz, sonra fotoğrafı yükle. Anı Cloudinary’de ortak galeriye düşer.</p>
+
+        <form id="memory-form" class="mt-6 space-y-4">
+          <label class="block text-left text-sm text-ink/80">
+            Başlık
+            <input
+              id="memory-title"
+              type="text"
+              required
+              maxlength="80"
+              class="mt-1 w-full rounded-xl border border-blush/80 bg-white/80 px-4 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
+              placeholder="Örn. Me"
+            />
+          </label>
+          <label class="block text-left text-sm text-ink/80">
+            Tarih
+            <input
+              id="memory-date"
+              type="date"
+              required
+              class="mt-1 w-full rounded-xl border border-blush/80 bg-white/80 px-4 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
+            />
+          </label>
+          <label class="block text-left text-sm text-ink/80">
+            Anı açıklaması
+            <textarea
+              id="memory-description"
+              rows="3"
+              maxlength="400"
+              class="mt-1 w-full resize-none rounded-xl border border-blush/80 bg-white/80 px-4 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
+              placeholder="Kısa bir not..."
+            ></textarea>
+          </label>
+          <div>
+            <button
+              id="cloudinary-pick"
+              type="button"
+              class="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-rose/40 bg-blush/25 px-4 py-8 text-center transition hover:bg-blush/40"
+            >
+              <span class="text-2xl" aria-hidden="true">🤍</span>
+              <span class="mt-2 text-sm text-dusty">Fotoğraf seç / yükle</span>
+              <span id="upload-status" class="mt-1 text-xs font-light text-ink/55">Cloudinary ile yüklenir</span>
+            </button>
+            <img id="upload-preview" alt="" class="mt-3 hidden max-h-40 w-full rounded-2xl object-cover" />
+          </div>
+          <p id="memory-error" class="hidden text-sm text-dusty"></p>
+          <button
+            type="submit"
+            class="w-full rounded-full bg-dusty px-6 py-3 text-sm tracking-wide text-cream transition hover:bg-rose"
+          >
+            Kaydet ve Galeriye Ekle
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    <script>
+      const CLOUD_NAME = "wb8bbwnq";
+      const UPLOAD_PRESET = "Lucinam";
+      const MEMORY_TAG = "lucinam";
+
+      // Add photos here. Replace the sample URLs, titles, dates, and captions with your own.
+      const photos = [
+        {
+          id: 1,
+          url: "images/IMG_4441.JPEG",
+          title: "Me",
+          date: "November 29, 2025",
+          description: "",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=80",
+          title: "Photo title",
+          date: "Month Day, Year",
+          description: "Write a short caption for this photo.",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
+          title: "Photo title",
+          date: "Month Day, Year",
+          description: "Write a short caption for this photo.",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+          title: "Photo title",
+          date: "Month Day, Year",
+          description: "Write a short caption for this photo.",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1200&q=80",
+          title: "Photo title",
+          date: "Month Day, Year",
+          description: "Write a short caption for this photo.",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b0?auto=format&fit=crop&w=1200&q=80",
+          title: "Photo title",
+          date: "Month Day, Year",
+          description: "Write a short caption for this photo.",
+        },
+      ];
+
+      const grid = document.getElementById("gallery-grid");
+      const lightbox = document.getElementById("lightbox");
+      const lightboxFigure = document.getElementById("lightbox-figure");
+      const lightboxImage = document.getElementById("lightbox-image");
+      const lightboxTitle = document.getElementById("lightbox-title");
+      const lightboxDate = document.getElementById("lightbox-date");
+      const lightboxDescription = document.getElementById("lightbox-description");
+      const memoryModal = document.getElementById("memory-modal");
+      const uploadPreview = document.getElementById("upload-preview");
+      const uploadStatus = document.getElementById("upload-status");
+      const memoryError = document.getElementById("memory-error");
+
+      let currentIndex = 0;
+      let lastFocus = null;
+      let uploadedUrl = "";
+      let uploadedMemory = null;
+      let galleryPhotos = [];
+      let cloudMemories = [];
+
+      function sanitizeContextValue(value) {
+        return String(value || "")
+          .replaceAll("|", " ")
+          .replaceAll("=", "-")
+          .trim()
+          .slice(0, 220);
+      }
+
+      function memoryContextString() {
+        const title = sanitizeContextValue(document.getElementById("memory-title").value);
+        const date = sanitizeContextValue(formatDateLabel(document.getElementById("memory-date").value));
+        const description = sanitizeContextValue(document.getElementById("memory-description").value);
+        return `title=${title}|date=${date}|description=${description}`;
+      }
+
+      function contextFromResource(item) {
+        const raw = item.context || {};
+        return raw.custom || raw;
+      }
+
+      function resourceToPhoto(item) {
+        const ctx = contextFromResource(item);
+        const format = item.format || "jpg";
+        const url =
+          item.secure_url ||
+          `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/v${item.version}/${item.public_id}.${format}`;
+        return {
+          id: item.public_id || url,
+          url,
+          title: ctx.title || ctx.alt || "Anı",
+          date: ctx.date || formatDateLabel(String(item.created_at || "").slice(0, 10)),
+          description: ctx.description || ctx.caption || "",
+        };
+      }
+
+      async function fetchCloudinaryMemories() {
+        const response = await fetch(
+          `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${MEMORY_TAG}.json?_=${Date.now()}`
+        );
+        if (!response.ok) {
+          throw new Error("list-unavailable");
+        }
+        const data = await response.json();
+        return (data.resources || [])
+          .slice()
+          .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+          .map(resourceToPhoto);
+      }
+
+      function formatDateLabel(iso) {
+        if (!iso) return "";
+        const date = new Date(`${iso}T00:00:00`);
+        if (Number.isNaN(date.getTime())) return iso;
+        return date.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function renderGallery() {
+        galleryPhotos = [...cloudMemories, ...photos];
+        grid.innerHTML = galleryPhotos
+          .map(
+            (photo, index) => `
+            <button
+              type="button"
+              class="photo-card reveal group relative overflow-hidden rounded-3xl bg-blush/40 text-left shadow-[0_12px_30px_rgba(164,92,104,0.12)] focus:outline-none focus:ring-2 focus:ring-rose/50"
+              style="transition-delay: ${index * 90}ms"
+              data-index="${index}"
+              aria-label="Open ${escapeHtml(photo.title)}"
+            >
+              <div class="aspect-[4/5] overflow-hidden">
+                <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.title)}" class="h-full w-full object-cover" />
+              </div>
+              <div class="overlay pointer-events-none absolute inset-0 flex flex-col justify-end p-5 text-cream opacity-0 transition duration-500 group-hover:opacity-100">
+                <p class="font-serif text-2xl">${escapeHtml(photo.title)}</p>
+                <p class="mt-1 text-xs uppercase tracking-[0.2em] text-champagne">${escapeHtml(photo.date)}</p>
+                <p class="mt-2 text-sm font-light text-cream/90">${escapeHtml(photo.description)}</p>
+              </div>
+            </button>
+          `
+          )
+          .join("");
+      }
+
+      function fillLightbox(index) {
+        const photo = galleryPhotos[index];
+        lightboxImage.src = photo.url;
+        lightboxImage.alt = photo.title;
+        lightboxTitle.textContent = photo.title;
+        lightboxDate.textContent = photo.date;
+        lightboxDescription.textContent = photo.description;
+        lightboxFigure.classList.remove("lightbox-enter");
+        void lightboxFigure.offsetWidth;
+        lightboxFigure.classList.add("lightbox-enter");
+      }
+
+      function openLightbox(index) {
+        currentIndex = index;
+        lastFocus = document.activeElement;
+        fillLightbox(currentIndex);
+        lightbox.classList.remove("hidden");
+        lightbox.classList.add("flex");
+        lightbox.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        document.getElementById("lightbox-close").focus();
+      }
+
+      function closeLightbox() {
+        lightbox.classList.add("hidden");
+        lightbox.classList.remove("flex");
+        lightbox.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+      }
+
+      function showPrev() {
+        currentIndex = (currentIndex - 1 + galleryPhotos.length) % galleryPhotos.length;
+        fillLightbox(currentIndex);
+      }
+
+      function showNext() {
+        currentIndex = (currentIndex + 1) % galleryPhotos.length;
+        fillLightbox(currentIndex);
+      }
+
+      function setMemoryError(message) {
+        if (!message) {
+          memoryError.classList.add("hidden");
+          memoryError.textContent = "";
+          return;
+        }
+        memoryError.textContent = message;
+        memoryError.classList.remove("hidden");
+      }
+
+      function openMemoryModal() {
+        lastFocus = document.activeElement;
+        memoryModal.classList.remove("hidden");
+        memoryModal.classList.add("flex");
+        memoryModal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        document.getElementById("memory-title").focus();
+      }
+
+      function closeMemoryModal() {
+        memoryModal.classList.add("hidden");
+        memoryModal.classList.remove("flex");
+        memoryModal.setAttribute("aria-hidden", "true");
+        if (lightbox.classList.contains("hidden")) document.body.style.overflow = "";
+        document.getElementById("memory-form").reset();
+        uploadedUrl = "";
+        uploadedMemory = null;
+        uploadPreview.src = "";
+        uploadPreview.classList.add("hidden");
+        uploadStatus.textContent = "Cloudinary ile yüklenir";
+        setMemoryError("");
+        if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+      }
+
+      const cloudinaryWidget = window.cloudinary
+        ? window.cloudinary.createUploadWidget(
+            {
+              cloudName: CLOUD_NAME,
+              uploadPreset: UPLOAD_PRESET,
+              sources: ["local", "camera"],
+              multiple: false,
+              maxFiles: 1,
+              tags: [MEMORY_TAG],
+              clientAllowedFormats: ["jpg", "jpeg", "png", "webp", "heic", "gif"],
+              styles: {
+                palette: {
+                  window: "#FBF6EE",
+                  windowBorder: "#C27B86",
+                  tabIcon: "#A45C68",
+                  menuIcons: "#A45C68",
+                  textDark: "#3D3836",
+                  textLight: "#FBF6EE",
+                  link: "#A45C68",
+                  action: "#A45C68",
+                  inactiveTabIcon: "#C27B86",
+                  error: "#A45C68",
+                  inProgress: "#C27B86",
+                  complete: "#A45C68",
+                  sourceBg: "#F4D5DC",
+                },
+              },
+            },
+            (error, result) => {
+              if (error) {
+                setMemoryError("Yükleme tamamlanamadı. Cloudinary ayarlarını kontrol et.");
+                return;
+              }
+              if (result && result.event === "success") {
+                uploadedUrl = result.info.secure_url;
+                uploadedMemory = resourceToPhoto(result.info);
+                const title = document.getElementById("memory-title").value.trim();
+                const isoDate = document.getElementById("memory-date").value;
+                const description = document.getElementById("memory-description").value.trim();
+                if (title) uploadedMemory.title = title;
+                if (isoDate) uploadedMemory.date = formatDateLabel(isoDate);
+                if (description) uploadedMemory.description = description;
+                uploadPreview.src = uploadedUrl;
+                uploadPreview.alt = uploadedMemory.title || "Yüklenen fotoğraf";
+                uploadPreview.classList.remove("hidden");
+                uploadStatus.textContent = "Fotoğraf yüklendi";
+                setMemoryError("");
+              }
+            }
+          )
+        : null;
+
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+      );
+
+      function observeReveals() {
+        document.querySelectorAll(".reveal:not(.is-visible)").forEach((el) => revealObserver.observe(el));
+      }
+
+      const music = document.getElementById("bg-music");
+      const musicToggle = document.getElementById("music-toggle");
+      const iconPlay = document.getElementById("icon-play");
+      const iconPause = document.getElementById("icon-pause");
+
+      function setMusicUi(playing) {
+        musicToggle.setAttribute("aria-pressed", String(playing));
+        musicToggle.setAttribute("aria-label", playing ? "Pause music" : "Play music");
+        iconPlay.classList.toggle("hidden", playing);
+        iconPause.classList.toggle("hidden", !playing);
+      }
+
+      musicToggle.addEventListener("click", async () => {
+        try {
+          if (music.paused) {
+            await music.play();
+            setMusicUi(true);
+          } else {
+            music.pause();
+            setMusicUi(false);
+          }
+        } catch {
+          setMusicUi(false);
+        }
+      });
+
+      music.addEventListener("ended", () => setMusicUi(false));
+      music.addEventListener("pause", () => {
+        if (!music.ended) setMusicUi(false);
+      });
+
+      async function refreshSharedGallery() {
+        try {
+          cloudMemories = await fetchCloudinaryMemories();
+        } catch {
+          cloudMemories = uploadedMemory ? [uploadedMemory] : cloudMemories;
+        }
+        renderGallery();
+        observeReveals();
+      }
+
+      refreshSharedGallery();
+
+      grid.addEventListener("click", (event) => {
+        const card = event.target.closest("[data-index]");
+        if (!card) return;
+        openLightbox(Number(card.dataset.index));
+      });
+
+      document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
+      document.getElementById("lightbox-prev").addEventListener("click", showPrev);
+      document.getElementById("lightbox-next").addEventListener("click", showNext);
+
+      document.getElementById("lightbox-backdrop").addEventListener("click", closeLightbox);
+
+      document.getElementById("open-memory-modal").addEventListener("click", openMemoryModal);
+      document.getElementById("memory-modal-close").addEventListener("click", closeMemoryModal);
+      document.getElementById("memory-modal-backdrop").addEventListener("click", closeMemoryModal);
+
+      document.getElementById("cloudinary-pick").addEventListener("click", () => {
+        if (!cloudinaryWidget) {
+          setMemoryError("Cloudinary widget yüklenemedi. Sayfayı yenile.");
+          return;
+        }
+        const title = document.getElementById("memory-title").value.trim();
+        const isoDate = document.getElementById("memory-date").value;
+        if (!title || !isoDate) {
+          setMemoryError("Fotoğraf yüklemeden önce başlık ve tarihi yaz.");
+          return;
+        }
+        setMemoryError("");
+        cloudinaryWidget.update({
+          tags: [MEMORY_TAG],
+          context: memoryContextString(),
+        });
+        cloudinaryWidget.open();
+      });
+
+      document.getElementById("memory-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!uploadedUrl || !uploadedMemory) {
+          setMemoryError("Önce bir fotoğraf yükle.");
+          return;
+        }
+        const title = document.getElementById("memory-title").value.trim();
+        const isoDate = document.getElementById("memory-date").value;
+        const description = document.getElementById("memory-description").value.trim();
+        if (!title || !isoDate) {
+          setMemoryError("Başlık ve tarih gerekli.");
+          return;
+        }
+
+        uploadedMemory.title = title;
+        uploadedMemory.date = formatDateLabel(isoDate);
+        uploadedMemory.description = description;
+
+        const already = cloudMemories.some((item) => item.id === uploadedMemory.id || item.url === uploadedMemory.url);
+        if (!already) cloudMemories.unshift(uploadedMemory);
+
+        closeMemoryModal();
+        renderGallery();
+        observeReveals();
+        await refreshSharedGallery();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (!memoryModal.classList.contains("hidden")) {
+          if (event.key === "Escape") closeMemoryModal();
+          return;
+        }
+        if (lightbox.classList.contains("hidden")) return;
+        if (event.key === "Escape") closeLightbox();
+        if (event.key === "ArrowLeft") showPrev();
+        if (event.key === "ArrowRight") showNext();
+      });
+    </script>
+  </body>
+</html>
