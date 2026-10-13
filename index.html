@@ -59,10 +59,9 @@
 
       .hero-veil {
         background:
-          linear-gradient(165deg, rgba(164, 92, 104, 0.72) 0%, rgba(61, 56, 54, 0.55) 46%, rgba(61, 56, 54, 0.78) 100%),
-          radial-gradient(900px 520px at 18% 0%, rgba(244, 213, 220, 0.95), transparent 58%),
-          radial-gradient(720px 480px at 100% 12%, rgba(232, 213, 163, 0.7), transparent 52%),
-          #3d3836;
+          linear-gradient(180deg, rgba(61, 56, 54, 0.18) 0%, rgba(61, 56, 54, 0.38) 45%, rgba(61, 56, 54, 0.55) 100%),
+          url("https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1920&q=80")
+            center/cover no-repeat;
       }
 
       .photo-card img {
@@ -198,7 +197,7 @@
           Lucinam
         </h1>
         <p class="mt-6 max-w-xl text-lg font-light leading-relaxed text-cream/90 sm:text-xl">
-          A private collection of moments, kept in one place.
+          Add your own photos and captions. This page is a template you can fill however you like.
         </p>
         <a
           href="#gallery"
@@ -216,14 +215,14 @@
           <p class="text-xs uppercase tracking-[0.35em] text-rose">Gallery</p>
           <h2 class="mt-3 font-serif text-4xl sm:text-5xl">Your photos</h2>
           <p class="mx-auto mt-4 max-w-lg text-sm font-light text-ink/70">
-            Click a card to open it.
+            Click a card to open it. Replace the sample images in the photos list with your own.
           </p>
           <button
             id="open-memory-modal"
             type="button"
             class="mt-8 inline-flex items-center gap-2 rounded-full border border-rose/30 bg-blush/70 px-6 py-3 text-sm tracking-wide text-dusty shadow-[0_10px_24px_rgba(164,92,104,0.14)] backdrop-blur transition hover:bg-blush hover:shadow-[0_12px_28px_rgba(164,92,104,0.2)]"
           >
-            Yeni Anı Ekle 📸
+            Add New Memory 📸
           </button>
         </div>
         <div id="gallery-grid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
@@ -248,14 +247,14 @@
         type="button"
         class="inline-flex items-center gap-2 rounded-full border border-blush/80 bg-cream/90 px-4 py-2 text-xs tracking-wide text-dusty shadow-[0_10px_24px_rgba(164,92,104,0.16)] backdrop-blur transition hover:bg-cream"
       >
-        Yönetici Girişi 🔒
+        Admin Login 🔒
       </button>
       <button
         id="admin-logout"
         type="button"
         class="inline-flex items-center gap-2 rounded-full border border-rose/30 bg-dusty px-4 py-2 text-xs tracking-wide text-cream shadow-[0_10px_24px_rgba(164,92,104,0.2)] transition hover:bg-rose"
       >
-        Oturumu Kapat
+        Log Out
       </button>
     </div>
 
@@ -340,28 +339,28 @@
           id="memory-modal-close"
           type="button"
           class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-blush/70 text-xl text-ink transition hover:bg-blush"
-          aria-label="Kapat"
+          aria-label="Close"
         >
           ×
         </button>
         <p class="text-xs uppercase tracking-[0.32em] text-rose">Lucinam</p>
-        <h2 id="memory-modal-title" class="mt-2 font-serif text-3xl">Yeni anı</h2>
-        <p class="mt-2 text-sm font-light text-ink/65">Önce başlık ve tarihi yaz, sonra fotoğrafı yükle. Anı Cloudinary’de ortak galeriye düşer.</p>
+        <h2 id="memory-modal-title" class="mt-2 font-serif text-3xl">New memory</h2>
+        <p class="mt-2 text-sm font-light text-ink/65">Enter a title and date, then upload a photo. It will appear in the shared Cloudinary gallery.</p>
 
         <form id="memory-form" class="mt-6 space-y-4">
           <label class="block text-left text-sm text-ink/80">
-            Başlık
+            Title
             <input
               id="memory-title"
               type="text"
               required
               maxlength="80"
               class="mt-1 w-full rounded-xl border border-blush/80 bg-white/80 px-4 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
-              placeholder="Örn. Me"
+              placeholder="e.g. Summer evening"
             />
           </label>
           <label class="block text-left text-sm text-ink/80">
-            Tarih
+            Date
             <input
               id="memory-date"
               type="date"
@@ -370,13 +369,13 @@
             />
           </label>
           <label class="block text-left text-sm text-ink/80">
-            Anı açıklaması
+            Caption
             <textarea
               id="memory-description"
               rows="3"
               maxlength="400"
               class="mt-1 w-full resize-none rounded-xl border border-blush/80 bg-white/80 px-4 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
-              placeholder="Kısa bir not..."
+              placeholder="A short note..."
             ></textarea>
           </label>
           <div>
@@ -386,8 +385,8 @@
               class="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-rose/40 bg-blush/25 px-4 py-8 text-center transition hover:bg-blush/40"
             >
               <span class="text-2xl" aria-hidden="true">🤍</span>
-              <span class="mt-2 text-sm text-dusty">Fotoğraf seç / yükle</span>
-              <span id="upload-status" class="mt-1 text-xs font-light text-ink/55">Cloudinary ile yüklenir</span>
+              <span class="mt-2 text-sm text-dusty">Choose / upload photo</span>
+              <span id="upload-status" class="mt-1 text-xs font-light text-ink/55">Uploads via Cloudinary</span>
             </button>
             <img id="upload-preview" alt="" class="mt-3 hidden max-h-40 w-full rounded-2xl object-cover" />
           </div>
@@ -396,7 +395,7 @@
             type="submit"
             class="w-full rounded-full bg-dusty px-6 py-3 text-sm tracking-wide text-cream transition hover:bg-rose"
           >
-            Kaydet ve Galeriye Ekle
+            Save and add to gallery
           </button>
         </form>
       </div>
@@ -416,16 +415,16 @@
           id="admin-modal-close"
           type="button"
           class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-blush/70 text-xl text-ink transition hover:bg-blush"
-          aria-label="Kapat"
+          aria-label="Close"
         >
           ×
         </button>
         <p class="text-xs uppercase tracking-[0.32em] text-rose">Lucinam</p>
-        <h2 id="admin-modal-title" class="mt-2 font-serif text-3xl">Yönetici Girişi</h2>
-        <p class="mt-2 text-sm font-light text-ink/65">Fotoğraf eklemek ve silmek için giriş yap.</p>
+        <h2 id="admin-modal-title" class="mt-2 font-serif text-3xl">Admin login</h2>
+        <p class="mt-2 text-sm font-light text-ink/65">Sign in to add or remove photos.</p>
         <form id="admin-form" class="mt-6 space-y-4">
           <label class="block text-left text-sm text-ink/80">
-            Kullanıcı adı
+            Username
             <input
               id="admin-username"
               type="text"
@@ -435,7 +434,7 @@
             />
           </label>
           <label class="block text-left text-sm text-ink/80">
-            Şifre
+            Password
             <input
               id="admin-password"
               type="password"
@@ -449,7 +448,7 @@
             type="submit"
             class="w-full rounded-full bg-dusty px-6 py-3 text-sm tracking-wide text-cream transition hover:bg-rose"
           >
-            Giriş Yap
+            Sign in
           </button>
         </form>
       </div>
@@ -465,7 +464,7 @@
     >
       <div id="confirm-backdrop" class="absolute inset-0 bg-ink/50 backdrop-blur-md"></div>
       <div class="relative z-10 w-full max-w-sm rounded-[1.75rem] border border-blush/70 bg-cream px-6 py-7 text-center shadow-[0_24px_60px_rgba(61,56,54,0.22)]">
-        <h2 id="confirm-title" class="font-serif text-3xl">Emin misin?</h2>
+        <h2 id="confirm-title" class="font-serif text-3xl">Are you sure?</h2>
         <p id="confirm-text" class="mt-3 text-sm font-light leading-relaxed text-ink/70"></p>
         <div class="mt-6 flex gap-3">
           <button
@@ -473,14 +472,14 @@
             type="button"
             class="flex-1 rounded-full border border-blush bg-white/70 px-4 py-3 text-sm text-ink transition hover:bg-blush/50"
           >
-            Vazgeç
+            Cancel
           </button>
           <button
             id="confirm-ok"
             type="button"
             class="flex-1 rounded-full bg-dusty px-4 py-3 text-sm text-cream transition hover:bg-rose"
           >
-            Sil
+            Delete
           </button>
         </div>
       </div>
@@ -554,7 +553,7 @@
         return {
           id: item.public_id || url,
           url,
-          title: ctx.title || ctx.alt || "Anı",
+          title: ctx.title || ctx.alt || "Memory",
           date: ctx.date || formatDateLabel(String(item.created_at || "").slice(0, 10)),
           description: ctx.description || ctx.caption || "",
         };
@@ -621,7 +620,7 @@
         galleryPhotos = [...cloudMemories];
         if (!galleryPhotos.length) {
           grid.innerHTML = `
-            <p class="col-span-full py-16 text-center font-serif text-2xl text-ink/55">Henüz fotoğraf yok.</p>
+            <p class="col-span-full py-16 text-center font-serif text-2xl text-ink/55">No photos yet.</p>
           `;
           return;
         }
@@ -634,7 +633,7 @@
             >
               ${
                 isAdmin
-                  ? `<button type="button" data-delete-index="${index}" class="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-cream/95 text-base shadow-md transition hover:bg-blush" aria-label="Sil">🗑️</button>`
+                  ? `<button type="button" data-delete-index="${index}" class="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-cream/95 text-base shadow-md transition hover:bg-blush" aria-label="Delete">🗑️</button>`
                   : ""
               }
               <button
@@ -729,7 +728,7 @@
         uploadedMemory = null;
         uploadPreview.src = "";
         uploadPreview.classList.add("hidden");
-        uploadStatus.textContent = "Cloudinary ile yüklenir";
+        uploadStatus.textContent = "Uploads via Cloudinary";
         setMemoryError("");
         if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
       }
@@ -807,7 +806,7 @@
         if (!isAdmin) return;
         const photo = galleryPhotos[index];
         if (!photo) return;
-        const accepted = await askConfirm(`“${photo.title}” galeriden kaldırılsın mı?`);
+        const accepted = await askConfirm(`Remove “${photo.title}” from the gallery?`);
         if (!accepted) return;
         hideMemoryId(photo.id);
         cloudMemories = cloudMemories.filter((item) => item.id !== photo.id);
@@ -815,7 +814,7 @@
         if (!lightbox.classList.contains("hidden")) closeLightbox();
         renderGallery();
         observeReveals();
-        showNotice("Fotoğraf galeriden kaldırıldı.");
+        showNotice("Photo removed from the gallery.");
       }
 
       const cloudinaryWidget = window.cloudinary
@@ -848,7 +847,7 @@
             },
             (error, result) => {
               if (error) {
-                setMemoryError("Yükleme tamamlanamadı. Cloudinary ayarlarını kontrol et.");
+                setMemoryError("Upload failed. Check your Cloudinary settings.");
                 return;
               }
               if (result && result.event === "success") {
@@ -861,9 +860,9 @@
                 if (isoDate) uploadedMemory.date = formatDateLabel(isoDate);
                 if (description) uploadedMemory.description = description;
                 uploadPreview.src = uploadedUrl;
-                uploadPreview.alt = uploadedMemory.title || "Yüklenen fotoğraf";
+                uploadPreview.alt = uploadedMemory.title || "Uploaded photo";
                 uploadPreview.classList.remove("hidden");
-                uploadStatus.textContent = "Fotoğraf yüklendi";
+                uploadStatus.textContent = "Photo uploaded";
                 setMemoryError("");
               }
             }
@@ -964,7 +963,7 @@
           setAdminMode(true);
           return;
         }
-        setAdminError("Kullanıcı adı veya şifre hatalı.");
+        setAdminError("Incorrect username or password.");
       });
 
       document.getElementById("confirm-ok").addEventListener("click", () => finishConfirm(true));
@@ -974,13 +973,13 @@
       document.getElementById("cloudinary-pick").addEventListener("click", () => {
         if (!isAdmin) return;
         if (!cloudinaryWidget) {
-          setMemoryError("Cloudinary widget yüklenemedi. Sayfayı yenile.");
+          setMemoryError("Could not load the Cloudinary widget. Refresh the page.");
           return;
         }
         const title = document.getElementById("memory-title").value.trim();
         const isoDate = document.getElementById("memory-date").value;
         if (!title || !isoDate) {
-          setMemoryError("Fotoğraf yüklemeden önce başlık ve tarihi yaz.");
+          setMemoryError("Enter a title and date before uploading a photo.");
           return;
         }
         setMemoryError("");
@@ -995,14 +994,14 @@
         event.preventDefault();
         if (!isAdmin) return;
         if (!uploadedUrl || !uploadedMemory) {
-          setMemoryError("Önce bir fotoğraf yükle.");
+          setMemoryError("Upload a photo first.");
           return;
         }
         const title = document.getElementById("memory-title").value.trim();
         const isoDate = document.getElementById("memory-date").value;
         const description = document.getElementById("memory-description").value.trim();
         if (!title || !isoDate) {
-          setMemoryError("Başlık ve tarih gerekli.");
+          setMemoryError("Title and date are required.");
           return;
         }
 
