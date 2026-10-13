@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -361,12 +361,41 @@
           </label>
           <label class="block text-left text-sm text-ink/80">
             Date
-            <input
-              id="memory-date"
-              type="date"
-              required
-              class="mt-1 w-full rounded-xl border border-blush/80 bg-white/80 px-4 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
-            />
+            <div class="mt-1 grid grid-cols-3 gap-2" lang="en-US">
+              <select
+                id="memory-month"
+                required
+                class="rounded-xl border border-blush/80 bg-white/80 px-3 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
+              >
+                <option value="" disabled selected>Month</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+              <select
+                id="memory-day"
+                required
+                class="rounded-xl border border-blush/80 bg-white/80 px-3 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
+              >
+                <option value="" disabled selected>Day</option>
+              </select>
+              <select
+                id="memory-year"
+                required
+                class="rounded-xl border border-blush/80 bg-white/80 px-3 py-2.5 text-ink outline-none ring-rose/30 focus:ring-2"
+              >
+                <option value="" disabled selected>Year</option>
+              </select>
+            </div>
           </label>
           <label class="block text-left text-sm text-ink/80">
             Caption
@@ -532,9 +561,34 @@
           .slice(0, 220);
       }
 
+      function initMemoryDateFields() {
+        const daySelect = document.getElementById("memory-day");
+        const yearSelect = document.getElementById("memory-year");
+        if (daySelect.options.length === 1) {
+          for (let day = 1; day <= 31; day += 1) {
+            const value = String(day).padStart(2, "0");
+            daySelect.add(new Option(String(day), value));
+          }
+        }
+        if (yearSelect.options.length === 1) {
+          const currentYear = new Date().getFullYear();
+          for (let year = currentYear + 1; year >= currentYear - 80; year -= 1) {
+            yearSelect.add(new Option(String(year), String(year)));
+          }
+        }
+      }
+
+      function getMemoryDateIso() {
+        const month = document.getElementById("memory-month").value;
+        const day = document.getElementById("memory-day").value;
+        const year = document.getElementById("memory-year").value;
+        if (!month || !day || !year) return "";
+        return `${year}-${month}-${day}`;
+      }
+
       function memoryContextString() {
         const title = sanitizeContextValue(document.getElementById("memory-title").value);
-        const date = sanitizeContextValue(formatDateLabel(document.getElementById("memory-date").value));
+        const date = sanitizeContextValue(formatDateLabel(getMemoryDateIso()));
         const description = sanitizeContextValue(document.getElementById("memory-description").value);
         return `title=${title}|date=${date}|description=${description}`;
       }
@@ -854,7 +908,7 @@
                 uploadedUrl = result.info.secure_url;
                 uploadedMemory = resourceToPhoto(result.info);
                 const title = document.getElementById("memory-title").value.trim();
-                const isoDate = document.getElementById("memory-date").value;
+                const isoDate = getMemoryDateIso();
                 const description = document.getElementById("memory-description").value.trim();
                 if (title) uploadedMemory.title = title;
                 if (isoDate) uploadedMemory.date = formatDateLabel(isoDate);
@@ -925,6 +979,7 @@
         observeReveals();
       }
 
+      initMemoryDateFields();
       refreshSharedGallery();
 
       grid.addEventListener("click", (event) => {
@@ -977,7 +1032,7 @@
           return;
         }
         const title = document.getElementById("memory-title").value.trim();
-        const isoDate = document.getElementById("memory-date").value;
+        const isoDate = getMemoryDateIso();
         if (!title || !isoDate) {
           setMemoryError("Enter a title and date before uploading a photo.");
           return;
@@ -998,7 +1053,7 @@
           return;
         }
         const title = document.getElementById("memory-title").value.trim();
-        const isoDate = document.getElementById("memory-date").value;
+        const isoDate = getMemoryDateIso();
         const description = document.getElementById("memory-description").value.trim();
         if (!title || !isoDate) {
           setMemoryError("Title and date are required.");
